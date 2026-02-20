@@ -12,12 +12,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.apitest.ui.theme.ApiTestTheme
-import com.example.apitest.viewModel.PokemonViewModel
+import com.example.apitest.viewModel.DinoViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val viewModel = PokemonViewModel()
+        val viewModel = DinoViewModel()
         viewModel.getEmolga()
         enableEdgeToEdge()
         setContent {

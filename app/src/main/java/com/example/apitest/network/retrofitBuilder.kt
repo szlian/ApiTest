@@ -6,7 +6,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 class retrofitBuilder {
     fun build() : Retrofit =
         Retrofit.Builder()
-            .baseUrl("https://perenual.com/api/v2/")
+            .baseUrl("https://dinoapi.brunosouzadev.com/api/")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 }
