@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -15,36 +16,28 @@ import com.example.apitest.ui.theme.ApiTestTheme
 import com.example.apitest.viewModel.DinoViewModel
 
 class MainActivity : ComponentActivity() {
+
+    private val viewModel: DinoViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val viewModel = DinoViewModel()
-        viewModel.getEmolga()
+
         enableEdgeToEdge()
+
         setContent {
             ApiTestTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
+                Scaffold(
+                    modifier = Modifier.fillMaxSize()
+                ) { padding ->
+                    Text(
+                        text = "Dino API",
+                        modifier = Modifier.padding(padding)
                     )
+                }
+                setContent {
+                    viewModel.getDino("adamtisaurus", "14000","N/A")
                 }
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    ApiTestTheme {
-        Greeting("Android")
     }
 }
