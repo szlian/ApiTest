@@ -4,6 +4,7 @@ import com.example.apitest.model.Dinosaur
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 
 /**
@@ -52,6 +53,12 @@ interface DinoAPIClient {
 
     @GET("dinosaurs/{name}")
     suspend fun getDino(
-        @Path("name") name: Int
+        //adamtisaurus", 14000,4, 18, "herbivore", "late cretaceous"
+        @Query("name") name: String = "adamtisaurus",
+        @Query("weight") weight: Int = 14000,
+        @Query("height") height: Int = 4,
+        @Query("length") length: Int = 18,
+        @Query("diet") diet: String = "herbivore",
+        @Query("period") period: String = "late cretaceous"
     ): Response<Dinosaur>
 }

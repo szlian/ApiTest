@@ -5,14 +5,10 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.example.apitest.ui.theme.ApiTestTheme
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.example.apitest.navigation.Routes
 import com.example.apitest.viewModel.DinoViewModel
 
 class MainActivity : ComponentActivity() {
@@ -25,18 +21,14 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
 
         setContent {
-            ApiTestTheme {
-                Scaffold(
-                    modifier = Modifier.fillMaxSize()
-                ) { padding ->
-                    Text(
-                        text = "Dino API",
-                        modifier = Modifier.padding(padding)
-                    )
-                }
-                setContent {
-                    viewModel.getDino("adamtisaurus", "14000","N/A")
-                }
+            val navigationController = rememberNavController()
+            NavHost(
+                navController = navigationController,  {
+                startDestination = Routes.DinoList.route
+            }
+                ) {
+                composable(Routes.DinoList.route) { Routes.DinoList(navController = navigationController) }
+                composable(Routes.DinoDetails.route) { Routes.DinoDetails(navController = navigationController) }
             }
         }
     }
