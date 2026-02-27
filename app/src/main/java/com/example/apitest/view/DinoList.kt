@@ -15,11 +15,11 @@ import androidx.compose.ui.unit.sp
 fun DinoList () {
     Box(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize()
-                .fillMaxSize()
-                .align(Alignment.Center),
+            .fillMaxSize()
+            .align(Alignment.Center),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(text = "Dino List", fontSize = 24.sp, fontWeight = FontWeight.Bold)
+            Text(text = "DinoList", fontSize = 24.sp, fontWeight = FontWeight.Bold)
         }
     }
 }

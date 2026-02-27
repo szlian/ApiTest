@@ -3,9 +3,9 @@ package com.example.apitest.model
 import com.google.gson.annotations.SerializedName
 
 data class Dinosaur(
-    @SerializedName("name")
+   @SerializedName("name")
     val name: String,
-    @SerializedName("weight")
+     @SerializedName("weight")
     val weight: String,
     @SerializedName("height")
     val height: String,

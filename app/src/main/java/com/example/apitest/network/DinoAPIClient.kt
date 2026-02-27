@@ -53,12 +53,11 @@ interface DinoAPIClient {
 
     @GET("dinosaurs/{name}")
     suspend fun getDino(
-        //adamtisaurus", 14000,4, 18, "herbivore", "late cretaceous"
-        @Query("name") name: String = "adamtisaurus",
-        @Query("weight") weight: Int = 14000,
-        @Query("height") height: Int = 4,
-        @Query("length") length: Int = 18,
-        @Query("diet") diet: String = "herbivore",
-        @Query("period") period: String = "late cretaceous"
+        @Path("name") name: String,
+        @Query("weight") weight: Int,
+        @Query("height") height: Int,
+        @Query("length") length: Int,
+        @Query("diet") diet: String,
+        @Query("period") period: String
     ): Response<Dinosaur>
 }

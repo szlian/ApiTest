@@ -15,16 +15,15 @@ class DinoViewModel: ViewModel() {
     fun getDino(){
         viewModelScope.launch {
             try{
-                val response = dinoApi.getDino(name)
+                val response = dinoApi.getDino(
+                    name = "adamtisaurus",
+                    weight = 14000,
+                    height = 4,
+                    length = 18,
+                    diet = "herbivore",
+                    period = "late cretaceous"
+                )
 
-                if(response.isSuccessful){
-                    val dino = response.body()
-                    Log.d("DinoViewModel", "Dino name: ${dino?.name}")
-                    Log.d("DinoViewModel", "Dino weight: ${dino?.weight}")
-                    Log.d("DinoViewModel", "Dino height: ${dino?.height}")
-                }else{
-                    Log.e("DinoViewModel", "Error: ${response.code()}")
-                }
             }catch (e: Exception){
                 Log.e("DinoViewModel", "Error: ${e.message}")
             }
