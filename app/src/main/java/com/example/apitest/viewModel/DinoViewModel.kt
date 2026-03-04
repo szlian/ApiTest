@@ -1,33 +1,31 @@
-package com.example.apitest.viewModel
+package com.example.apitest.viewmodel
 
-import android.R.attr.name
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.apitest.network.DinoAPIClient
-import com.example.apitest.network.RetrofitBuilder
+import com.example.apitest.model.Dinosaur
+import com.example.apitest.network.RetrofitInstance
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class DinoViewModel: ViewModel() {
-    private val retrofit = RetrofitBuilder.build()
-    private val dinoApi = retrofit.create(DinoAPIClient::class.java)
 
-    fun getDino(){
+    private val _dinos = MutableStateFlow<List<Dinosaur>>(emptyList())
+    val dinos: StateFlow<List<Dinosaur>> = _dinos
+
+    init {
+        fetchDinosaurs()
+    }
+
+    private fun fetchDinosaurs() {
         viewModelScope.launch {
-            try{
-                val response = dinoApi.getDino(
-                    name = "adamtisaurus",
-                    weight = 14000,
-                    height = 4,
-                    length = 18,
-                    diet = "herbivore",
-                    period = "late cretaceous"
-                )
-
-            }catch (e: Exception){
-                Log.e("DinoViewModel", "Error: ${e.message}")
+            try {
+                val list = RetrofitInstance.api.getDinosaurs()
+                _dinos.value = list
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
         }
-
     }
 }
+

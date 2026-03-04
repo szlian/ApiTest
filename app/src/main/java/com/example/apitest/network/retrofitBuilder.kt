@@ -3,14 +3,12 @@ package com.example.apitest.network
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-object RetrofitBuilder {
-
-    private const val BASE_URL = "https://dinoapi.brunosouzadev.com/"
-
-    fun build(): Retrofit {
-        return Retrofit.Builder()
-            .baseUrl(BASE_URL)
+object RetrofitInstance {
+    val api: DinoApiService by lazy {
+        Retrofit.Builder()
+            .baseUrl("https://dinoapi.brunosouzadev.com/api/dinosaurs/") // reemplaza con tu URL base
             .addConverterFactory(GsonConverterFactory.create())
             .build()
+            .create(DinoApiService::class.java)
     }
 }

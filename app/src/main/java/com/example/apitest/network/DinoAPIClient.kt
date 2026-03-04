@@ -1,10 +1,7 @@
 package com.example.apitest.network
 
 import com.example.apitest.model.Dinosaur
-import retrofit2.Response
 import retrofit2.http.GET
-import retrofit2.http.Path
-import retrofit2.http.Query
 
 
 /**
@@ -49,15 +46,9 @@ import retrofit2.http.Query
         }
     }*/
 
-interface DinoAPIClient {
 
-    @GET("dinosaurs/{name}")
-    suspend fun getDino(
-        @Path("name") name: String,
-        @Query("weight") weight: Int,
-        @Query("height") height: Int,
-        @Query("length") length: Int,
-        @Query("diet") diet: String,
-        @Query("period") period: String
-    ): Response<Dinosaur>
+
+interface DinoApiService {
+    @GET("/api/dinosaurs")
+    suspend fun getDinosaurs(): List<Dinosaur>
 }
