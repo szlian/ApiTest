@@ -49,6 +49,6 @@ import retrofit2.http.GET
 
 
 interface DinoApiService {
-    @GET("/api/dinosaurs")
+    @GET("api/dinosaurs/") // Ruta relativa corregida
     suspend fun getDinosaurs(): List<Dinosaur>
 }
