@@ -9,32 +9,40 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.apitest.DinosaurCard
 import com.example.apitest.viewmodel.DinoViewModel
 
-@Preview(showBackground = true)
 @Composable
-fun DinoList(viewModel: DinoViewModel = viewModel()) {
+fun DinoList(
+    viewModel: DinoViewModel, // Recibe el ViewModel como parámetro
+    onDinoClick: (String) -> Unit
+) {
     val dinos by viewModel.dinos.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val error by viewModel.error.collectAsState()
+    val favoriteIds by viewModel.favoriteIds.collectAsState()
 
     Box(modifier = Modifier.fillMaxSize()) {
         when {
             isLoading -> {
-                CircularProgressIndicator(
-                    modifier = Modifier.align(Alignment.Center)
-                )
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
             }
             error != null -> {
-                Text(
-                    text = "Error: $error",
+                Column(
                     modifier = Modifier.align(Alignment.Center),
-                    color = MaterialTheme.colorScheme.error
-                )
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "Error al cargar",
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                    Text(
+                        text = error ?: "",
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
             }
             dinos.isEmpty() -> {
                 Text(
@@ -48,8 +56,16 @@ fun DinoList(viewModel: DinoViewModel = viewModel()) {
                     contentPadding = PaddingValues(16.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    items(dinos) { dinosaur ->
-                        DinosaurCard(dinosaur = dinosaur)
+                    items(
+                        items = dinos,
+                        key = { it.id }
+                    ) { dinosaur ->
+                        DinosaurCard(
+                            dinosaur = dinosaur,
+                            isFavorite = favoriteIds.contains(dinosaur.id),
+                            onFavoriteClick = { viewModel.toggleFavorite(dinosaur.id) },
+                            onClick = { onDinoClick(dinosaur.id) }
+                        )
                     }
                 }
             }

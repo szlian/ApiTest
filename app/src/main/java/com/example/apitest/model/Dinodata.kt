@@ -37,5 +37,5 @@ data class Dinosaur(
     val description: String? = null,
 
     @SerializedName("image")
-    val image: String? = null // Campo imagen añadido
+    val image: String? = null
 )
