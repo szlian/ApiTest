@@ -12,7 +12,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
@@ -20,7 +19,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.apitest.cleanText
-import com.example.apitest.ui.theme.GreenJC
 import com.example.apitest.viewmodel.DinoViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -28,14 +26,13 @@ import com.example.apitest.viewmodel.DinoViewModel
 fun DinoDetails(
     dinoId: String,
     viewModel: DinoViewModel,
+    backgroundColor: Color, // Nuevo parámetro
     onBackClick: () -> Unit
 ) {
-    // Observar la lista completa para reaccionar cuando cargue
     val allDinos by viewModel.dinos.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val favoriteIds by viewModel.favoriteIds.collectAsState()
 
-    // Buscar el dinosaurio - se actualiza automáticamente cuando llegan los datos
     val dinosaur = remember(dinoId, allDinos) {
         allDinos.find { it.id == dinoId }
     }
@@ -43,6 +40,7 @@ fun DinoDetails(
     val isFavorite = favoriteIds.contains(dinoId)
 
     Scaffold(
+        containerColor = backgroundColor, // Fondo de la pantalla
         topBar = {
             TopAppBar(
                 title = {
@@ -68,7 +66,7 @@ fun DinoDetails(
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = GreenJC,
+                    containerColor = backgroundColor,
                     titleContentColor = Color.White,
                     navigationIconContentColor = Color.White,
                     actionIconContentColor = Color.White
@@ -83,11 +81,9 @@ fun DinoDetails(
         ) {
             when {
                 isLoading && dinosaur == null -> {
-                    // Mostrar carga inicial
                     CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
                 }
                 dinosaur == null -> {
-                    // No encontrado (error)
                     Column(
                         modifier = Modifier.align(Alignment.Center),
                         horizontalAlignment = Alignment.CenterHorizontally
@@ -96,28 +92,20 @@ fun DinoDetails(
                             text = "Dinosaurio no encontrado",
                             style = MaterialTheme.typography.titleLarge
                         )
-                        Text(
-                            text = "ID: $dinoId",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.error
-                        )
-                        Spacer(modifier = Modifier.height(16.dp))
                         Button(onClick = onBackClick) {
                             Text("Volver")
                         }
                     }
                 }
                 else -> {
-                    // Mostrar detalles
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
                             .verticalScroll(rememberScrollState())
                     ) {
-                        // Imagen
-                        if (!dinosaur.image.isNullOrEmpty()) {
+                        dinosaur.image?.let { url ->
                             AsyncImage(
-                                model = dinosaur.image,
+                                model = url,
                                 contentDescription = "Imagen de ${dinosaur.name}",
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -129,7 +117,6 @@ fun DinoDetails(
                         Column(
                             modifier = Modifier.padding(20.dp)
                         ) {
-                            // Nombre
                             Text(
                                 text = dinosaur.name.cleanText().replaceFirstChar { it.uppercase() },
                                 fontSize = 32.sp,
@@ -137,7 +124,6 @@ fun DinoDetails(
                                 color = MaterialTheme.colorScheme.primary
                             )
 
-                            // Tipo
                             if (!dinosaur.type.isNullOrEmpty()) {
                                 Text(
                                     text = dinosaur.type.cleanText().replaceFirstChar { it.uppercase() },
@@ -149,7 +135,6 @@ fun DinoDetails(
 
                             Spacer(modifier = Modifier.height(16.dp))
 
-                            // Chips
                             Row(
                                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                                 modifier = Modifier.fillMaxWidth()
@@ -184,7 +169,6 @@ fun DinoDetails(
 
                             Spacer(modifier = Modifier.height(24.dp))
 
-                            // Especificaciones
                             Text(
                                 text = "Especificaciones",
                                 fontSize = 22.sp,
@@ -200,7 +184,6 @@ fun DinoDetails(
 
                             Spacer(modifier = Modifier.height(24.dp))
 
-                            // Descripción
                             Text(
                                 text = "Descripción",
                                 fontSize = 22.sp,
@@ -210,7 +193,7 @@ fun DinoDetails(
 
                             Card(
                                 colors = CardDefaults.cardColors(
-                                    containerColor = MaterialTheme.colorScheme.surfaceVariant
+                                    containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.9f)
                                 ),
                                 modifier = Modifier.fillMaxWidth(),
                                 shape = RoundedCornerShape(12.dp)

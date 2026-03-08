@@ -11,6 +11,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -21,7 +22,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -34,7 +34,12 @@ import androidx.navigation.navArgument
 import coil.compose.AsyncImage
 import com.example.apitest.model.Dinosaur
 import com.example.apitest.navigation.Routes
+import com.example.apitest.ui.theme.BlueBackground
 import com.example.apitest.ui.theme.GreenJC
+import com.example.apitest.ui.theme.OrangeBackground
+import com.example.apitest.ui.theme.PurpleBackground
+import com.example.apitest.ui.theme.RedBackground
+import com.example.apitest.ui.theme.TealBackground
 import com.example.apitest.view.DinoDetails
 import com.example.apitest.view.DinoList
 import com.example.apitest.view.FavoritesScreen
@@ -45,7 +50,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             MaterialTheme {
-                // ViewModel se crea aquí para compartirlo con todas las pantallas
                 val viewModel: DinoViewModel = viewModel()
                 MyBottomAppBar(viewModel)
             }
@@ -53,13 +57,23 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MyBottomAppBar(viewModel: DinoViewModel) {
     val navigationController = rememberNavController()
     val context = LocalContext.current.applicationContext
     val favoriteIds by viewModel.favoriteIds.collectAsState()
+
+    val backgroundColors = listOf(
+        GreenJC,
+        BlueBackground,
+        RedBackground,
+        PurpleBackground,
+        OrangeBackground,
+        TealBackground
+    )
+    var currentColorIndex by remember { mutableStateOf(0) }
+    val currentBackgroundColor = backgroundColors[currentColorIndex]
 
     val navBackStackEntry by navigationController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
@@ -71,6 +85,7 @@ fun MyBottomAppBar(viewModel: DinoViewModel) {
     }
 
     Scaffold(
+        containerColor = currentBackgroundColor, // Color de fondo de toda la app
         topBar = {
             if (currentRoute == Routes.DinoList.route || currentRoute == Routes.Favorites.route) {
                 TopAppBar(
@@ -83,7 +98,7 @@ fun MyBottomAppBar(viewModel: DinoViewModel) {
                         )
                     },
                     colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = GreenJC,
+                        containerColor = currentBackgroundColor,
                         titleContentColor = Color.White
                     )
                 )
@@ -91,8 +106,9 @@ fun MyBottomAppBar(viewModel: DinoViewModel) {
         },
         bottomBar = {
             BottomAppBar(
-                containerColor = GreenJC
+                containerColor = currentBackgroundColor
             ) {
+                // Botón Home
                 IconButton(
                     onClick = {
                         navigationController.navigate(Routes.DinoList.route) {
@@ -108,32 +124,28 @@ fun MyBottomAppBar(viewModel: DinoViewModel) {
                     )
                 }
 
+
+                //cambiar color botom
                 Box(
                     modifier = Modifier.weight(1f),
                     contentAlignment = Alignment.Center
                 ) {
                     FloatingActionButton(
                         onClick = {
-                            Toast.makeText(context, "${favoriteIds.size} favoritos", Toast.LENGTH_SHORT).show()
+                            currentColorIndex = (currentColorIndex + 1) % backgroundColors.size
+                            Toast.makeText(context, "Color cambiado!", Toast.LENGTH_SHORT).show()
                         },
                         containerColor = Color.White
                     ) {
-                        BadgedBox(
-                            badge = {
-                                if (favoriteIds.isNotEmpty()) {
-                                    Badge { Text(favoriteIds.size.toString()) }
-                                }
-                            }
-                        ) {
-                            Icon(
-                                imageVector = Icons.Filled.Favorite,
-                                contentDescription = "Favoritos",
-                                tint = if (favoriteIds.isNotEmpty()) Color.Red else GreenJC
-                            )
-                        }
+                        Icon(
+                            imageVector = Icons.Default.Refresh,
+                            contentDescription = "Cambiar color",
+                            tint = backgroundColors[(currentColorIndex + 1) % backgroundColors.size]
+                        )
                     }
                 }
 
+                // Botón Favoritos
                 IconButton(
                     onClick = {
                         navigationController.navigate(Routes.Favorites.route) {
@@ -181,6 +193,7 @@ fun MyBottomAppBar(viewModel: DinoViewModel) {
                 DinoDetails(
                     viewModel = viewModel,
                     dinoId = dinoId,
+                    backgroundColor = currentBackgroundColor, // Pasar color a detalles
                     onBackClick = {
                         navigationController.popBackStack()
                     }
@@ -199,7 +212,6 @@ fun MyBottomAppBar(viewModel: DinoViewModel) {
     }
 }
 
-
 @Composable
 fun DinosaurCard(
     dinosaur: Dinosaur,
@@ -209,7 +221,7 @@ fun DinosaurCard(
 ) {
     Card(
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.9f)
         ),
         modifier = Modifier
             .fillMaxWidth()
@@ -261,7 +273,7 @@ fun DinosaurCard(
                         onClick = { },
                         label = {
                             Text(
-                                text = dinosaur.diet.cleanText().replaceFirstChar { it.uppercase() },
+                                dinosaur.diet.cleanText().replaceFirstChar { it.uppercase() },
                                 maxLines = 1
                             )
                         },
@@ -274,7 +286,7 @@ fun DinosaurCard(
                         onClick = { },
                         label = {
                             Text(
-                                text = dinosaur.period.cleanText().replaceFirstChar { it.uppercase() },
+                                dinosaur.period.cleanText().replaceFirstChar { it.uppercase() },
                                 maxLines = 1
                             )
                         }
@@ -294,6 +306,7 @@ fun DinosaurCard(
     }
 }
 
+// Extensión para limpiar texto
 fun String?.cleanText(): String {
     return this?.replace("\n", " ")
         ?.replace("\r", " ")
